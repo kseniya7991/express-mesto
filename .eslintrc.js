@@ -11,8 +11,7 @@ module.exports = {
     ecmaVersion: 12,
   },
   rules: {
-    'no-underscore-dangle': 0,
-    'no-console': 0,
+    'no-underscore-dangle': ['error', { allow: ['_id', '_message'] }],
     'linebreak-style': 0,
   },
 };
