@@ -1,5 +1,5 @@
 const Card = require('../models/card');
-const { ERROR_INCORRECT, ERROR_UNDEFINED, ERROR_SERVER } = require('../utils/utils');
+const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../utils/utils');
 
 module.exports.createCard = (req, res) => {
   const userId = req.user._id; // _id станет доступен
@@ -13,9 +13,9 @@ module.exports.createCard = (req, res) => {
     // данные не записались, вернём ошибку
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(ERROR_INCORRECT).send({ message: 'Введены некорректные данные карточки' });
+        res.status(BAD_REQUEST).send({ message: 'Введены некорректные данные карточки' });
       } else {
-        res.status(ERROR_SERVER).send({ message: 'Ошибка сервера' });
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
       }
     });
 };
@@ -26,7 +26,7 @@ module.exports.findCards = (req, res) => {
     .then((cards) => res.send({ cards }))
     // данные не записались, вернём ошибку
     .catch(() => {
-      res.status(ERROR_SERVER).send({ message: 'Ошибка сервера' });
+      res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
     });
 };
 
@@ -36,15 +36,15 @@ module.exports.deleteCard = (req, res) => {
       if (card) {
         res.send({ card });
       } else {
-        res.status(ERROR_UNDEFINED).send({ message: 'Карточка с указанным ID не найдена' });
+        res.status(NOT_FOUND).send({ message: 'Карточка с указанным ID не найдена' });
       }
     })
     // данные не записались, вернём ошибку
     .catch((err) => {
-      if (err.CastError === undefined) {
-        res.status(ERROR_INCORRECT).send({ message: 'Карточка с указанным ID не найдена' });
+      if (err.name === 'CastError') {
+        res.status(BAD_REQUEST).send({ message: 'Карточка с указанным ID не найдена' });
       } else {
-        res.status(ERROR_SERVER).send({ message: 'Ошибка сервера' });
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
       }
     });
 };
@@ -59,15 +59,15 @@ module.exports.likeCard = (req, res) => {
       if (card) {
         res.send({ card });
       } else {
-        res.status(ERROR_UNDEFINED).send({ message: 'Карточка с указанным ID не найдена' });
+        res.status(NOT_FOUND).send({ message: 'Карточка с указанным ID не найдена' });
       }
     })
     // данные не записались, вернём ошибку
     .catch((err) => {
-      if (err.CastError === undefined) {
-        res.status(ERROR_INCORRECT).send({ message: 'Переданы некорректные данные для постановки/снятия лайка' });
+      if (err.name === 'CastError') {
+        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные для постановки/снятия лайка' });
       } else {
-        res.status(ERROR_SERVER).send({ message: 'Ошибка сервера' });
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
       }
     });
 };
@@ -82,15 +82,15 @@ module.exports.dislikeCard = (req, res) => {
       if (card) {
         res.send({ card });
       } else {
-        res.status(ERROR_UNDEFINED).send({ message: 'Карточка с указанным ID не найдена' });
+        res.status(NOT_FOUND).send({ message: 'Карточка с указанным ID не найдена' });
       }
     })
     // данные не записались, вернём ошибку
     .catch((err) => {
-      if (err.CastError === undefined) {
-        res.status(ERROR_INCORRECT).send({ message: 'Переданы некорректные данные для постановки/снятия лайка' });
+      if (err.name === 'CastError') {
+        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные для постановки/снятия лайка' });
       } else {
-        res.status(ERROR_SERVER).send({ message: 'Ошибка сервера' });
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
       }
     });
 };

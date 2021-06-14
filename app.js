@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const userRoutes = require('./routes/user');
 const cardRoutes = require('./routes/card');
 
-const { ERROR_UNDEFINED } = require('./utils/utils');
+const { NOT_FOUND } = require('./utils/utils');
 
 const { PORT = 3000 } = process.env;
 
@@ -31,6 +31,6 @@ app.use((req, res, next) => {
 
 app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
-app.use('/*', (req, res) => { res.status(ERROR_UNDEFINED).send({ message: 'Запрашиваемывй ресурс не найден' }); });
+app.use('/*', (req, res) => { res.status(NOT_FOUND).send({ message: 'Запрашиваемывй ресурс не найден' }); });
 
 app.listen(PORT);
