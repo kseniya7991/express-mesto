@@ -14,11 +14,17 @@ module.exports.findUsers = (req, res) => {
 
 module.exports.findUser = (req, res) => {
   User.findById(req.params.userId)
-    .then((user) => res.send({ user }))
+    .then((user) => {
+      if (user) {
+        res.send({ user });
+      } else {
+        res.status(ERROR_UNDEFINED).send({ message: 'Пользователь c таким ID не найден' });
+      }
+    })
     // данные не записались, определим и вернем ошибку
     .catch((err) => {
-      if (err.messageFormat === undefined) {
-        res.status(ERROR_UNDEFINED).send({ message: 'Пользователь c таким ID не найден' });
+      if (err.CastError === undefined) {
+        res.status(ERROR_INCORRECT).send({ message: 'Пользователь c таким ID не найден' });
       } else {
         res.status(ERROR_SERVER).send({ message: 'Ошибка сервера' });
       }
@@ -31,7 +37,7 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.send({ user }))
   // данные не записались, определим и вернем ошибку
     .catch((err) => {
-      if (err._message === 'user validation failed') {
+      if (err.name === 'ValidationError') {
         res.status(ERROR_INCORRECT).send({ message: 'Введены некорректные данные пользователя' });
       } else {
         res.status(ERROR_SERVER).send({ message: 'Ошибка сервера' });
@@ -47,13 +53,19 @@ module.exports.updateUser = (req, res) => {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
     })
-    .then((user) => res.send({ user }))
+    .then((user) => {
+      if (user) {
+        res.send({ user });
+      } else {
+        res.status(ERROR_UNDEFINED).send({ message: 'Пользователь c таким ID не найден' });
+      }
+    })
     // данные не записались, определим и вернем ошибку
     .catch((err) => {
-      if (err._message === 'Validation failed') {
-        res.status(ERROR_INCORRECT).send({ message: 'Введены некорректные данные аватара' });
-      } else if (err.messageFormat === undefined) {
-        res.status(ERROR_UNDEFINED).send({ message: 'Пользователь не найден' });
+      if (err.name === 'ValidationError') {
+        res.status(ERROR_INCORRECT).send({ message: 'Введены некорректные данные пользователя' });
+      } else if (err.CastError === undefined) {
+        res.status(ERROR_INCORRECT).send({ message: 'Пользователь c таким ID не найден' });
       } else {
         res.status(ERROR_SERVER).send({ message: 'Ошибка сервера' });
       }
@@ -68,13 +80,19 @@ module.exports.updateAvatar = (req, res) => {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
     })
-    .then((user) => res.send({ user }))
+    .then((user) => {
+      if (user) {
+        res.send({ user });
+      } else {
+        res.status(ERROR_UNDEFINED).send({ message: 'Пользователь c таким ID не найден' });
+      }
+    })
     // данные не записались, определим и вернем ошибку
     .catch((err) => {
-      if (err._message === 'Validation failed') {
+      if (err.name === 'ValidationError') {
         res.status(ERROR_INCORRECT).send({ message: 'Введены некорректные данные аватара' });
-      } else if (err.messageFormat === undefined) {
-        res.status(ERROR_UNDEFINED).send({ message: 'Пользователь не найден' });
+      } else if (err.CastError === undefined) {
+        res.status(ERROR_INCORRECT).send({ message: 'Пользователь c таким ID не найден' });
       } else {
         res.status(ERROR_SERVER).send({ message: 'Ошибка сервера' });
       }
