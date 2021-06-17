@@ -5,10 +5,8 @@ module.exports.findUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ users }))
     // данные не записались, вернём ошибку
-    .catch((err) => {
-      if (err) {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
-      }
+    .catch(() => {
+      res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
     });
 };
 
