@@ -1,10 +1,11 @@
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
+
 const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../utils/utils');
 
 module.exports.findUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ users }))
-    // данные не записались, вернём ошибку
     .catch(() => {
       res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
     });
@@ -19,7 +20,6 @@ module.exports.findUser = (req, res) => {
         res.status(NOT_FOUND).send({ message: 'Пользователь c таким ID не найден' });
       }
     })
-    // данные не записались, определим и вернем ошибку
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(BAD_REQUEST).send({ message: 'Пользователь c таким ID не найден' });
@@ -30,10 +30,15 @@ module.exports.findUser = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
     .then((user) => res.send({ user }))
-  // данные не записались, определим и вернем ошибку
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: 'Введены некорректные данные пользователя' });
@@ -48,8 +53,8 @@ module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(userId, { name, about },
     {
-      new: true, // обработчик then получит на вход обновлённую запись
-      runValidators: true, // данные будут валидированы перед изменением
+      new: true,
+      runValidators: true,
     })
     .then((user) => {
       if (user) {
@@ -58,7 +63,6 @@ module.exports.updateUser = (req, res) => {
         res.status(NOT_FOUND).send({ message: 'Пользователь c таким ID не найден' });
       }
     })
-    // данные не записались, определим и вернем ошибку
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: 'Введены некорректные данные пользователя' });
@@ -75,8 +79,8 @@ module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(userId, { avatar },
     {
-      new: true, // обработчик then получит на вход обновлённую запись
-      runValidators: true, // данные будут валидированы перед изменением
+      new: true,
+      runValidators: true,
     })
     .then((user) => {
       if (user) {
@@ -85,7 +89,6 @@ module.exports.updateAvatar = (req, res) => {
         res.status(NOT_FOUND).send({ message: 'Пользователь c таким ID не найден' });
       }
     })
-    // данные не записались, определим и вернем ошибку
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: 'Введены некорректные данные аватара' });
