@@ -4,7 +4,8 @@ const bodyParser = require('body-parser');
 
 const userRoutes = require('./routes/user');
 const cardRoutes = require('./routes/card');
-const loginRoutes = require('./routes/login');
+const { createUser } = require('./controllers/user');
+const { login } = require('./controllers/login');
 
 const { NOT_FOUND } = require('./utils/utils');
 
@@ -30,8 +31,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/signin', loginRoutes);
-app.post('/signup', userRoutes);
+app.post('/signin', login);
+app.post('/signup', createUser);
 
 app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
