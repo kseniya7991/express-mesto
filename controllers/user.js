@@ -17,12 +17,12 @@ module.exports.findUser = (req, res) => {
       if (user) {
         res.send({ user });
       } else {
-        res.status(NOT_FOUND).send({ message: 'Пользователь c таким ID не найден' });
+        res.status(NOT_FOUND).send({ message: ' файнд Пользователь c таким ID не найден' });
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Пользователь c таким ID не найден' });
+        res.status(BAD_REQUEST).send({ message: ' файнд ыПользователь c таким ID не найден' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
       }
@@ -33,7 +33,6 @@ module.exports.createUser = (req, res) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
@@ -41,7 +40,7 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.send({ user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Введены некорректные данные пользователя' });
+        res.status(BAD_REQUEST).send({ message: 'создание Введены некорректные данные пользователя' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
       }
@@ -60,14 +59,14 @@ module.exports.updateUser = (req, res) => {
       if (user) {
         res.send({ user });
       } else {
-        res.status(NOT_FOUND).send({ message: 'Пользователь c таким ID не найден' });
+        res.status(NOT_FOUND).send({ message: 'апдейт Пользователь c таким ID не найден' });
       }
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: 'Введены некорректные данные пользователя' });
       } else if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Пользователь c таким ID не найден' });
+        res.status(BAD_REQUEST).send({ message: 'апдейт Пользователь c таким ID не найден' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
       }
@@ -86,13 +85,31 @@ module.exports.updateAvatar = (req, res) => {
       if (user) {
         res.send({ user });
       } else {
-        res.status(NOT_FOUND).send({ message: 'Пользователь c таким ID не найден' });
+        res.status(NOT_FOUND).send({ message: 'апдейт Пользователь c таким ID не найден' });
       }
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: 'Введены некорректные данные аватара' });
       } else if (err.name === 'CastError') {
+        res.status(BAD_REQUEST).send({ message: 'апдейт Пользователь c таким ID не найден' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
+      }
+    });
+};
+
+module.exports.showCurrentUser = (req, res) => {
+  User.findById(req.user._id)
+    .then((user) => {
+      if (user) {
+        res.send({ user });
+      } else {
+        res.status(NOT_FOUND).send({ message: 'Пользователь c таким ID не найден' });
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
         res.status(BAD_REQUEST).send({ message: 'Пользователь c таким ID не найден' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
