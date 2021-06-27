@@ -6,8 +6,7 @@ const cookieParser = require('cookie-parser');
 const auth = require('./middlewares/auth');
 const userRoutes = require('./routes/user');
 const cardRoutes = require('./routes/card');
-const { createUser } = require('./controllers/user');
-const { login } = require('./controllers/login');
+const { createUser, login } = require('./controllers/user');
 
 const { NOT_FOUND } = require('./utils/utils');
 
