@@ -4,36 +4,34 @@ const User = require('../models/user');
 
 // Импорт ошибок
 const BadRequest = require('../errors/bad-req-err');
-const NOT_FOUND = require('../errors/not-found-err');
-const INTERNAL_SERVER_ERROR = require('../errors/internal-server-err');
+const NotFound = require('../errors/not-found-err');
+const InternalServerError = require('../errors/internal-server-err');
+const Unauthorized = require('../errors/unauthorized');
 
-/* const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../utils/utils');
- */
-
-module.exports.findUsers = (req, res) => {
+module.exports.findUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ users }))
     .catch(() => {
-      res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
-    });
+      throw new InternalServerError('Ошибка сервера');
+    })
+    .catch(next);
 };
 
-module.exports.findUser = (req, res) => {
+module.exports.findUser = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (user) {
         res.send({ user });
-      } else {
-        res.status(NOT_FOUND).send({ message: ' файнд Пользователь c таким ID не найден' });
       }
+      throw new NotFound('Пользователь c таким ID не найден');
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: ' файнд ыПользователь c таким ID не найден' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
+        throw new NotFound('Пользователь c таким ID не найден');
       }
-    });
+      throw new InternalServerError('Ошибка сервера');
+    })
+    .catch(next);
 };
 
 module.exports.createUser = (req, res, next) => {
@@ -51,18 +49,14 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        /*  next(new BadRequest('Введены некорректные данные пользователя')); */
         throw new BadRequest('Введены некорректные данные пользователяa');
-        /* res.status(BAD_REQUEST).send({ message: 'создание Введены некорректные данные пользователя' }); */
-      } else {
-        next(new Error('Ошибка сервера'));
-        /* res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' }); */
       }
+      throw new InternalServerError('Ошибка сервера');
     })
     .catch(next);
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const userId = req.user._id;
   const { name, about } = req.body;
   User.findByIdAndUpdate(userId, { name, about },
@@ -73,22 +67,22 @@ module.exports.updateUser = (req, res) => {
     .then((user) => {
       if (user) {
         res.send({ user });
-      } else {
-        res.status(NOT_FOUND).send({ message: 'апдейт Пользователь c таким ID не найден' });
       }
+      throw new NotFound('Пользователь c таким ID не найден');
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Введены некорректные данные пользователя' });
+        throw new BadRequest('Введены некорректные данные пользователя');
       } else if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'апдейт Пользователь c таким ID не найден' });
+        throw new BadRequest('Пользователь c таким ID не найден');
       } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
+        throw new InternalServerError('Ошибка сервера');
       }
-    });
+    })
+    .catch(next);
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const userId = req.user._id;
   const { avatar } = req.body;
   User.findByIdAndUpdate(userId, { avatar },
@@ -99,40 +93,40 @@ module.exports.updateAvatar = (req, res) => {
     .then((user) => {
       if (user) {
         res.send({ user });
-      } else {
-        res.status(NOT_FOUND).send({ message: 'апдейт Пользователь c таким ID не найден' });
       }
+      throw new NotFound('Пользователь c таким ID не найден');
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Введены некорректные данные аватара' });
+        throw new BadRequest('Введены некорректные данные аватара пользователя');
       } else if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'апдейт Пользователь c таким ID не найден' });
+        throw new BadRequest('Пользователь c таким ID не найден');
       } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
+        throw new InternalServerError('Ошибка сервера');
       }
-    });
+    })
+    .catch(next);
 };
 
-module.exports.showCurrentUser = (req, res) => {
+module.exports.showCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (user) {
-        res.send({ user });
-      } else {
-        res.status(NOT_FOUND).send({ message: 'Пользователь c таким ID не найден' });
+        return res.send({ user });
       }
+      throw new NotFound('Пользователь c таким ID не найден');
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Пользователь c таким ID не найден' });
+        throw new BadRequest('Пользователь c таким ID не найден');
       } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
+        throw new InternalServerError('Ошибка сервера');
       }
-    });
+    })
+    .catch(next);
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   User.findUserByCredentials(email, password)
@@ -147,8 +141,7 @@ module.exports.login = (req, res) => {
         .send({ token });
     })
     .catch((err) => {
-      res
-        .status(401)
-        .send({ message: err.message });
-    });
+      throw new Unauthorized(err.message);
+    })
+    .catch(next);
 };

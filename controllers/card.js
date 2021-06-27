@@ -1,7 +1,15 @@
 const Card = require('../models/card');
+
+// Импорт ошибок
+const BadRequest = require('../errors/bad-req-err');
+const NotFound = require('../errors/not-found-err');
+const InternalServerError = require('../errors/internal-server-err');
+const ForbiddenError = require('../errors/forbidden-err');
+const Unauthorized = require('../errors/unauthorized');
+
 const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../utils/utils');
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const userId = req.user._id; // _id станет доступен
   const { name, link } = req.body;
   Card.create({
@@ -10,45 +18,57 @@ module.exports.createCard = (req, res) => {
     owner: userId,
   })
     .then((card) => res.send({ card }))
-    // данные не записались, вернём ошибку
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Введены некорректные данные карточки' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
+        throw new BadRequest('Введены некорректные данные карточки');
       }
-    });
+      throw new InternalServerError('Ошибка сервера');
+    })
+    .catch(next);
 };
 
-module.exports.findCards = (req, res) => {
+module.exports.findCards = (req, res, next) => {
   Card.find({})
     .populate('user')
     .then((cards) => res.send({ cards }))
-    // данные не записались, вернём ошибку
     .catch(() => {
-      res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
-    });
+      throw new InternalServerError('Ошибка сервера');
+    })
+    .catch(next);
 };
 
-module.exports.deleteCard = (req, res) => {
-  console.log(req.params);
-
+module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
-      if (card && req.user._id === card.owner.toString()) {
-        res.send({ card });
-      } else {
-        res.status(NOT_FOUND).send({ message: 'Карточка с указанным ID не найдена' });
+      /* const idid = req.user._id;
+      const ownerrr = card.owner;
+
+      function lala(idid, ownerrr) {
+        if (idid !== ownerrr.toString()) {
+          return false;
+        }
+        return true;
       }
+
+      console.log(lala(idid, ownerrr)); */
+
+      if (req.user._id !== card.owner.toString()) {
+        return next(new ForbiddenError('Нельзя удалить карточку другого пользователя'));
+      }
+
+      if (!card) {
+        return next(new NotFound('Карточка с указанным ID не найдена'));
+      }
+
+      res.send({ card });
     })
-    // данные не записались, вернём ошибку
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Карточка с указанным ID не найдена' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
+        throw new BadRequest('Карточка с указанным ID не найдена');
       }
-    });
+      throw new InternalServerError('Ошибка сервера ewe');
+    })
+    .catch(next);
 };
 
 module.exports.likeCard = (req, res) => {

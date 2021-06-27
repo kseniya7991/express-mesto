@@ -1,4 +1,5 @@
 const router = require('express').Router();
+
 const {
   findUsers, findUser, updateUser, updateAvatar, showCurrentUser,
 } = require('../controllers/user');
