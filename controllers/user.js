@@ -2,7 +2,13 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
-const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../utils/utils');
+// Импорт ошибок
+const BadRequest = require('../errors/bad-req-err');
+const NOT_FOUND = require('../errors/not-found-err');
+const INTERNAL_SERVER_ERROR = require('../errors/internal-server-err');
+
+/* const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../utils/utils');
+ */
 
 module.exports.findUsers = (req, res) => {
   User.find({})
@@ -30,7 +36,7 @@ module.exports.findUser = (req, res) => {
     });
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -45,11 +51,15 @@ module.exports.createUser = (req, res) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'создание Введены некорректные данные пользователя' });
+        /*  next(new BadRequest('Введены некорректные данные пользователя')); */
+        throw new BadRequest('Введены некорректные данные пользователяa');
+        /* res.status(BAD_REQUEST).send({ message: 'создание Введены некорректные данные пользователя' }); */
       } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
+        next(new Error('Ошибка сервера'));
+        /* res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' }); */
       }
-    });
+    })
+    .catch(next);
 };
 
 module.exports.updateUser = (req, res) => {
