@@ -6,142 +6,159 @@ const User = require('../models/user');
 const BadRequest = require('../errors/bad-req-err');
 const NotFound = require('../errors/not-found-err');
 const InternalServerError = require('../errors/internal-server-err');
-const Unauthorized = require('../errors/unauthorized');
+const ConflictError = require('../errors/conflict-err');
+const UnauthorizedError = require('../errors/unauthorized-err');
 
 module.exports.findUsers = (req, res, next) => {
-  User.find({})
-    .then((users) => res.send({ users }))
-    .catch(() => {
-      throw new InternalServerError('Ошибка сервера');
-    })
-    .catch(next);
+  async function findUsers() {
+    try {
+      const users = await User.find({});
+      return res.send({ users });
+    } catch (err) {
+      return next(new InternalServerError('Ошибка сервера'));
+    }
+  }
+  findUsers();
 };
 
 module.exports.findUser = (req, res, next) => {
-  User.findById(req.params.userId)
-    .then((user) => {
-      if (user) {
-        res.send({ user });
-      }
-      throw new NotFound('Пользователь c таким ID не найден');
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        throw new NotFound('Пользователь c таким ID не найден');
-      }
-      throw new InternalServerError('Ошибка сервера');
-    })
-    .catch(next);
-};
-
-module.exports.createUser = (req, res, next) => {
-  const {
-    name, about, avatar, email, password,
-  } = req.body;
-  bcrypt.hash(password, 10)
-    .then((hash) => User.create({
-      name, about, avatar, email, password: hash,
-    }))
-    .then((user) => res.send({
-      user: {
-        name: user.name, about: user.about, avatar: user.avatar, _id: user._id, email: user.email,
-      },
-    }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        throw new BadRequest('Введены некорректные данные пользователяa');
-      }
-      throw new InternalServerError('Ошибка сервера');
-    })
-    .catch(next);
-};
-
-module.exports.updateUser = (req, res, next) => {
-  const userId = req.user._id;
-  const { name, about } = req.body;
-  User.findByIdAndUpdate(userId, { name, about },
-    {
-      new: true,
-      runValidators: true,
-    })
-    .then((user) => {
-      if (user) {
-        res.send({ user });
-      }
-      throw new NotFound('Пользователь c таким ID не найден');
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        throw new BadRequest('Введены некорректные данные пользователя');
-      } else if (err.name === 'CastError') {
-        throw new BadRequest('Пользователь c таким ID не найден');
-      } else {
-        throw new InternalServerError('Ошибка сервера');
-      }
-    })
-    .catch(next);
-};
-
-module.exports.updateAvatar = (req, res, next) => {
-  const userId = req.user._id;
-  const { avatar } = req.body;
-  User.findByIdAndUpdate(userId, { avatar },
-    {
-      new: true,
-      runValidators: true,
-    })
-    .then((user) => {
-      if (user) {
-        res.send({ user });
-      }
-      throw new NotFound('Пользователь c таким ID не найден');
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        throw new BadRequest('Введены некорректные данные аватара пользователя');
-      } else if (err.name === 'CastError') {
-        throw new BadRequest('Пользователь c таким ID не найден');
-      } else {
-        throw new InternalServerError('Ошибка сервера');
-      }
-    })
-    .catch(next);
-};
-
-module.exports.showCurrentUser = (req, res, next) => {
-  User.findById(req.user._id)
-    .then((user) => {
+  async function findUser() {
+    try {
+      const user = await User.findById(req.params.userId);
       if (user) {
         return res.send({ user });
       }
-      throw new NotFound('Пользователь c таким ID не найден');
-    })
-    .catch((err) => {
+      return next(new NotFound('Пользователь c таким ID не найден'));
+    } catch (err) {
       if (err.name === 'CastError') {
-        throw new BadRequest('Пользователь c таким ID не найден');
-      } else {
-        throw new InternalServerError('Ошибка сервера');
+        return next(new NotFound('Пользователь c таким ID не найден'));
       }
-    })
-    .catch(next);
+      return next(new InternalServerError('Ошибка сервера'));
+    }
+  }
+  findUser();
+};
+
+module.exports.createUser = (req, res, next) => {
+  async function createUser() {
+    try {
+      const {
+        name, about, avatar, email, password,
+      } = req.body;
+      if (password) {
+        const hash = await bcrypt.hash(password, 10);
+        const user = await User.create({
+          name, about, avatar, email, password: hash,
+        });
+        return res.send({
+          user: {
+            name: user.name,
+            about: user.about,
+            avatar: user.avatar,
+            _id: user._id,
+            email: user.email,
+          },
+        });
+      }
+      return next(new BadRequest('Введены некорректные данные пользователя'));
+    } catch (err) {
+      if (err.name === 'MongoError' && err.code === 11000) {
+        return next(new ConflictError('Пользователь с таким email уже существует'));
+      }
+      if (err.name === 'ValidationError') {
+        return next(new BadRequest('Введены некорректные данные пользователя'));
+      }
+      return next(new InternalServerError('Ошибка сервера'));
+    }
+  }
+  createUser();
+};
+
+module.exports.updateUser = (req, res, next) => {
+  async function updateUser() {
+    try {
+      const userId = req.user._id;
+      const { name, about } = req.body;
+      const user = await User.findByIdAndUpdate(userId, { name, about },
+        {
+          new: true,
+          runValidators: true,
+        });
+      if (user) {
+        return res.send({ user });
+      }
+      return next(new NotFound('Пользователь c таким ID не найден'));
+    } catch (err) {
+      if (err.name === 'ValidationError') {
+        return next(new BadRequest('Введены некорректные данные пользователя'));
+      } if (err.name === 'CastError') {
+        return next(new BadRequest('Пользователь c таким ID не найден'));
+      }
+      return next(new InternalServerError('Ошибка сервера'));
+    }
+  }
+  updateUser();
+};
+
+module.exports.updateAvatar = (req, res, next) => {
+  async function updateAvatar() {
+    try {
+      const userId = req.user._id;
+      const { avatar } = req.body;
+      const user = await User.findByIdAndUpdate(userId, { avatar },
+        {
+          new: true,
+          runValidators: true,
+        });
+      if (user) {
+        return res.send({ user });
+      }
+      return next(new NotFound('Пользователь c таким ID не найден'));
+    } catch (err) {
+      if (err.name === 'ValidationError') {
+        return next(new BadRequest('Введены некорректные данные аватара пользователя'));
+      } if (err.name === 'CastError') {
+        return next(new BadRequest('Пользователь c таким ID не найден'));
+      }
+      return next(new InternalServerError('Ошибка сервера'));
+    }
+  }
+  updateAvatar();
+};
+
+module.exports.showCurrentUser = (req, res, next) => {
+  async function showCurrentUser() {
+    try {
+      const user = await User.findById(req.user._id);
+      if (user) {
+        return res.send({ user });
+      }
+      return next(new NotFound('Пользователь c таким ID не найден'));
+    } catch (err) {
+      if (err.name === 'CastError') {
+        return next(new BadRequest('Пользователь c таким ID не найден'));
+      }
+      return next(new InternalServerError('Ошибка сервера'));
+    }
+  }
+  showCurrentUser();
 };
 
 module.exports.login = (req, res, next) => {
-  const { email, password } = req.body;
-
-  User.findUserByCredentials(email, password)
-    .then((user) => {
+  async function login() {
+    try {
+      const { email, password } = req.body;
+      const user = await User.findUserByCredentials(email, password);
       const token = jwt.sign({ _id: user._id }, 'secret', { expiresIn: '7d' });
-
-      res
+      return res
         .cookie('token', token, {
           maxAge: 3600000 * 24 * 7,
           httpOnly: true,
         })
         .send({ token });
-    })
-    .catch((err) => {
-      throw new Unauthorized(err.message);
-    })
-    .catch(next);
+    } catch (err) {
+      return next(new UnauthorizedError(err.message));
+    }
+  }
+  login();
 };

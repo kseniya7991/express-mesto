@@ -13,5 +13,6 @@ module.exports = {
   rules: {
     'no-underscore-dangle': ['error', { allow: ['_id', '_message'] }],
     'linebreak-style': 0,
+    'no-unused-vars': ['error', { argsIgnorePattern: 'next' }],
   },
 };
