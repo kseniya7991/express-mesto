@@ -38,29 +38,17 @@ module.exports.findCards = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
     .then((card) => {
-      /* const idid = req.user._id;
-      const ownerrr = card.owner;
-
-      function lala(idid, ownerrr) {
-        if (idid !== ownerrr.toString()) {
-          return false;
-        }
-        return true;
-      }
-
-      console.log(lala(idid, ownerrr)); */
-
-      if (req.user._id !== card.owner.toString()) {
+      if (card && req.user._id === card.owner.toString()) {
+        Card.findByIdAndRemove(req.params.cardId)
+          .then((deletedCard) => res.send({ dwdawwd }))
+          .catch(() => next(new InternalServerError('Ошибка сервера ewew')));
+      } else if (!card) {
+        return next(new NotFound('Карточка с указанным ID не найдена'));
+      } else {
         return next(new ForbiddenError('Нельзя удалить карточку другого пользователя'));
       }
-
-      if (!card) {
-        return next(new NotFound('Карточка с указанным ID не найдена'));
-      }
-
-      res.send({ card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -84,7 +72,6 @@ module.exports.likeCard = (req, res) => {
         res.status(NOT_FOUND).send({ message: 'Карточка с указанным ID не найдена' });
       }
     })
-    // данные не записались, вернём ошибку
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные для постановки/снятия лайка' });
