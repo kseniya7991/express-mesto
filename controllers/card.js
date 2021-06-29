@@ -21,7 +21,7 @@ module.exports.createCard = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequest('Введены некорректные данные карточки'));
       }
-      return next(new InternalServerError('Ошибка сервера'));
+      return next(new InternalServerError('На сервере произошла ошибка'));
     }
   }
   createCard();
@@ -33,7 +33,7 @@ module.exports.findCards = (req, res, next) => {
       const cards = await Card.find({}).populate('user');
       return res.send({ cards });
     } catch (err) {
-      return next(new InternalServerError('Ошибка сервера'));
+      return next(new InternalServerError('На сервере произошла ошибка'));
     }
   }
   findCards();
@@ -48,7 +48,7 @@ module.exports.deleteCard = (req, res, next) => {
           const card = await Card.findByIdAndRemove(req.params.cardId);
           return res.send({ card });
         } catch {
-          return next(new InternalServerError('Ошибка сервера'));
+          return next(new InternalServerError('На сервере произошла ошибка'));
         }
       } else if (!deletedCard) {
         return next(new NotFound('Карточка с указанным ID не найдена'));
@@ -59,7 +59,7 @@ module.exports.deleteCard = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(new BadRequest('Карточка с указанным ID не найдена'));
       }
-      return next(new InternalServerError('Ошибка сервера'));
+      return next(new InternalServerError('На сервере произошла ошибка'));
     }
   }
   deleteCard();
@@ -81,7 +81,7 @@ module.exports.likeCard = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(new BadRequest('Переданы некорректные данные для постановки/снятия лайка'));
       }
-      return next(new InternalServerError('Ошибка сервера'));
+      return next(new InternalServerError('На сервере произошла ошибка'));
     }
   }
   likeCard();
@@ -103,7 +103,7 @@ module.exports.dislikeCard = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(new BadRequest('Переданы некорректные данные для постановки/снятия лайка'));
       }
-      return next(new InternalServerError('Ошибка сервера'));
+      return next(new InternalServerError('На сервере произошла ошибка'));
     }
   }
   dislikeCard();

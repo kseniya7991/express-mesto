@@ -15,7 +15,7 @@ module.exports.findUsers = (req, res, next) => {
       const users = await User.find({});
       return res.send({ users });
     } catch (err) {
-      return next(new InternalServerError('Ошибка сервера'));
+      return next(new InternalServerError('На сервере произошла ошибка'));
     }
   }
   findUsers();
@@ -33,7 +33,7 @@ module.exports.findUser = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(new NotFound('Пользователь c таким ID не найден'));
       }
-      return next(new InternalServerError('Ошибка сервера'));
+      return next(new InternalServerError('На сервере произошла ошибка'));
     }
   }
   findUser();
@@ -68,7 +68,7 @@ module.exports.createUser = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequest('Введены некорректные данные пользователя'));
       }
-      return next(new InternalServerError('Ошибка сервера'));
+      return next(new InternalServerError('На сервере произошла ошибка'));
     }
   }
   createUser();
@@ -94,7 +94,7 @@ module.exports.updateUser = (req, res, next) => {
       } if (err.name === 'CastError') {
         return next(new BadRequest('Пользователь c таким ID не найден'));
       }
-      return next(new InternalServerError('Ошибка сервера'));
+      return next(new InternalServerError('На сервере произошла ошибка'));
     }
   }
   updateUser();
@@ -120,7 +120,7 @@ module.exports.updateAvatar = (req, res, next) => {
       } if (err.name === 'CastError') {
         return next(new BadRequest('Пользователь c таким ID не найден'));
       }
-      return next(new InternalServerError('Ошибка сервера'));
+      return next(new InternalServerError('На сервере произошла ошибка'));
     }
   }
   updateAvatar();
@@ -138,7 +138,7 @@ module.exports.showCurrentUser = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(new BadRequest('Пользователь c таким ID не найден'));
       }
-      return next(new InternalServerError('Ошибка сервера'));
+      return next(new InternalServerError('На сервере произошла ошибка'));
     }
   }
   showCurrentUser();
