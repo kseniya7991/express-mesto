@@ -1,23 +1,19 @@
 const jwt = require('jsonwebtoken');
-const { FORBIDDEN } = require('../utils/utils');
+const UnauthorizedError = require('../errors/unauthorized-err');
 
 module.exports = (req, res, next) => {
   const token = req.headers.cookie.split('token=')[1];
 
   if (!token) {
-    return res
-      .status(FORBIDDEN)
-      .send({ message: 'Необходима авторизация' });
+    return next(new UnauthorizedError('Необходима авторизация'));
   }
 
   let payload;
 
   try {
     payload = jwt.verify(token, 'secret');
-  } catch (error) {
-    return res
-      .status(FORBIDDEN)
-      .send({ message: 'Необходима авторизация' });
+  } catch (erу) {
+    return next(new UnauthorizedError('Необходима авторизация'));
   }
 
   req.user = payload; // записываем пейлоуд в объект запроса

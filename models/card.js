@@ -9,7 +9,6 @@ const cardSchema = new mongoose.Schema({
   },
   link: {
     type: String,
-    minlength: 2,
     required: true,
     validate: {
       validator(v) {

@@ -45,10 +45,8 @@ module.exports.createUser = (req, res, next) => {
       const {
         name, about, avatar, email, password,
       } = req.body;
-      console.log(name, about, avatar, email, password);
       if (password) {
         const hash = await bcrypt.hash(password, 10);
-        console.log(hash);
         const user = await User.create({
           name, about, avatar, email, password: hash,
         });

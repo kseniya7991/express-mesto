@@ -3,17 +3,29 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { celebrate, Joi } = require('celebrate');
+const validator = require('validator');
+
+const BadRequest = require('./errors/bad-req-err');
+const NotFound = require('./errors/not-found-err');
 
 const auth = require('./middlewares/auth');
 const userRoutes = require('./routes/user');
 const cardRoutes = require('./routes/card');
 const { createUser, login } = require('./controllers/user');
 
-const { NOT_FOUND, INTERNAL_SERVER_ERROR } = require('./utils/utils');
+const { INTERNAL_SERVER_ERROR } = require('./utils/utils');
 
 const { PORT = 3000 } = process.env;
 
 const app = express();
+
+const method = (value) => {
+  const correctLink = validator.isURL(value, { require_protocol: true });
+  if (!correctLink) {
+    return new BadRequest('Введены некорректные аватара пользователя');
+  }
+  return value;
+};
 
 // Подключаемся к серверу mongo
 async function start() {
@@ -38,16 +50,17 @@ app.use(cookieParser('secret'));
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required(),
+    email: Joi.string().required().email(),
     password: Joi.string().required(),
   }),
 }), login);
+
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string(),
-    email: Joi.string().required(),
+    avatar: Joi.string().custom(method, 'Validation Link'),
+    email: Joi.string().required().email(),
     password: Joi.string().required(),
   }),
 }), createUser);
@@ -58,6 +71,8 @@ app.use(auth);
 app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
 
+app.use('/*', (req, res, next) => next(new NotFound('Запрашиваемый ресурс не найден')));
+
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
   res.status(statusCode).send({
@@ -66,7 +81,5 @@ app.use((err, req, res, next) => {
       : message,
   });
 });
-
-app.use('/*', (req, res) => { res.status(NOT_FOUND).send({ message: 'Запрашиваемый ресурс не найден' }); });
 
 start();
