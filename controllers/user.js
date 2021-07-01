@@ -50,7 +50,7 @@ module.exports.createUser = (req, res, next) => {
         const user = await User.create({
           name, about, avatar, email, password: hash,
         });
-        return res.send({
+        return res.status(201).send({
           user: {
             name: user.name,
             about: user.about,

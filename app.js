@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const { celebrate, Joi } = require('celebrate');
+const { celebrate, Joi, isCelebrateError } = require('celebrate');
 const validator = require('validator');
 
 const BadRequest = require('./errors/bad-req-err');
@@ -75,6 +75,11 @@ app.use('/*', (req, res, next) => next(new NotFound('Запрашиваемый 
 
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
+
+  if (isCelebrateError(err)) {
+    res.status(400).send({ message: 'Введены некорректные данные' });
+  }
+
   res.status(statusCode).send({
     message: statusCode === 500
       ? 'На сервере произошла ошибка'

@@ -16,7 +16,7 @@ module.exports.createCard = (req, res, next) => {
         link,
         owner: userId,
       });
-      return res.send({ card });
+      return res.status(201).send({ card });
     } catch (err) {
       if (err.name === 'ValidationError') {
         return next(new BadRequest('Введены некорректные данные карточки'));
