@@ -57,7 +57,7 @@ module.exports.deleteCard = (req, res, next) => {
       }
     } catch (err) {
       if (err.name === 'CastError') {
-        return next(new BadRequest('Карточка с указанным ID не найдена'));
+        return next(new NotFound('Карточка с указанным ID не найдена'));
       }
       return next(new InternalServerError('На сервере произошла ошибка'));
     }

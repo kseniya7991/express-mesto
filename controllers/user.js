@@ -92,7 +92,7 @@ module.exports.updateUser = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequest('Введены некорректные данные пользователя'));
       } if (err.name === 'CastError') {
-        return next(new BadRequest('Пользователь c таким ID не найден'));
+        return next(new NotFound('Пользователь c таким ID не найден'));
       }
       return next(new InternalServerError('На сервере произошла ошибка'));
     }
@@ -118,7 +118,7 @@ module.exports.updateAvatar = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequest('Введены некорректные данные аватара пользователя'));
       } if (err.name === 'CastError') {
-        return next(new BadRequest('Пользователь c таким ID не найден'));
+        return next(new NotFound('Пользователь c таким ID не найден'));
       }
       return next(new InternalServerError('На сервере произошла ошибка'));
     }
@@ -136,7 +136,7 @@ module.exports.showCurrentUser = (req, res, next) => {
       return next(new NotFound('Пользователь c таким ID не найден'));
     } catch (err) {
       if (err.name === 'CastError') {
-        return next(new BadRequest('Пользователь c таким ID не найден'));
+        return next(new NotFound('Пользователь c таким ID не найден'));
       }
       return next(new InternalServerError('На сервере произошла ошибка'));
     }

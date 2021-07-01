@@ -4,6 +4,8 @@ const UnauthorizedError = require('../errors/unauthorized-err');
 module.exports = (req, res, next) => {
   const token = req.headers.cookie.split('token=')[1];
 
+  // Возвращаем ошибку Авторизации при попытке обращения к незащищенному роуту
+
   if (!token) {
     return next(new UnauthorizedError('Необходима авторизация'));
   }
