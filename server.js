@@ -5,6 +5,7 @@ const { INTERNAL_SERVER_ERROR } = require('./utils/utils');
 
 const { PORT = 3000 } = process.env;
 
+// подключение к серверу Mongo
 async function start() {
   try {
     app.listen(PORT, () => `Server is running on port ${PORT}`);
