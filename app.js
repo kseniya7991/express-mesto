@@ -1,5 +1,5 @@
 const express = require('express');
-const mongoose = require('mongoose');
+/* const mongoose = require('mongoose'); */
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { celebrate, Joi, isCelebrateError } = require('celebrate');
@@ -13,9 +13,9 @@ const userRoutes = require('./routes/user');
 const cardRoutes = require('./routes/card');
 const { createUser, login } = require('./controllers/user');
 
-const { INTERNAL_SERVER_ERROR } = require('./utils/utils');
+/* const { INTERNAL_SERVER_ERROR } = require('./utils/utils'); */
 
-const { PORT = 3000 } = process.env;
+/* const { PORT = 3000 } = process.env; */
 
 const app = express();
 
@@ -28,7 +28,7 @@ const method = (value) => {
 };
 
 // Подключаемся к серверу mongo
-async function start() {
+/* async function start() {
   try {
     app.listen(PORT, () => `Server is running on port ${PORT} `);
     await mongoose.connect('mongodb://localhost:27017/mestodb', {
@@ -41,7 +41,7 @@ async function start() {
     return `Init application error: status ${INTERNAL_SERVER_ERROR} ${error}`;
   }
   return null;
-}
+} */
 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -87,4 +87,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-start();
+/* start(); */
+
+module.exports = app;
