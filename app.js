@@ -26,6 +26,8 @@ const methodValidation = (value) => {
 const allowedCors = [
   'https://kst.mesto.nomoredomains.club/',
   'http://kst.mesto.nomoredomains.club/',
+  'https://api.kst.mesto.nomoredomains.club',
+  'http://api.kst.mesto.nomoredomains.club',
 ];
 const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
 
