@@ -22,7 +22,7 @@ const methodValidation = (value) => {
   }
   return value;
 };
-
+console.log('проект запущен');
 const allowedCors = [
   'https://kst.mesto.nomoredomains.club/',
   'http://kst.mesto.nomoredomains.club/',
