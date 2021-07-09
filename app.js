@@ -22,7 +22,7 @@ const methodValidation = (value) => {
   }
   return value;
 };
-/* const allowedCors = [
+const allowedCors = [
   'https://kst.mesto.nomoredomains.club',
   'http://kst.mesto.nomoredomains.club',
   'https://api.kst.mesto.nomoredomains.club',
@@ -35,7 +35,7 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', origin);
   }
 
-  const { method } = req;
+  /* const { method } = req;
 
   const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
 
@@ -47,10 +47,10 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Headers', requestHeaders);
     res.status(200);
     return;
-  }
+  } */
 
   next();
-}); */
+});
 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true }));
