@@ -8,7 +8,7 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 const BadRequest = require('./errors/bad-req-err');
 const NotFoundError = require('./errors/not-found-err');
 
-const auth = require('./middlewares/auth');
+/* const auth = require('./middlewares/auth'); */
 const userRoutes = require('./routes/user');
 const cardRoutes = require('./routes/card');
 const { createUser, login } = require('./controllers/user');
@@ -34,10 +34,6 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', origin);
   }
 
-  next();
-});
-
-app.use((req, res, next) => {
   const { method } = req;
 
   const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
@@ -48,7 +44,6 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
     // разрешаем кросс-доменные запросы с этими заголовками
     res.header('Access-Control-Allow-Headers', requestHeaders);
-    res.status(200);
   }
 
   next();
@@ -79,7 +74,7 @@ app.post('/signin', celebrate({
 }), login);
 
 // авторизация
-app.use(auth);
+/* app.use(auth); */
 
 app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
