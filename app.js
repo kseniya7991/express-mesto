@@ -22,6 +22,7 @@ const methodValidation = (value) => {
   }
   return value;
 };
+
 const allowedCors = [
   'https://kst.mesto.nomoredomains.club',
   'http://kst.mesto.nomoredomains.club',
@@ -33,6 +34,10 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', origin);
   }
 
+  next();
+});
+
+app.use((req, res, next) => {
   const { method } = req;
 
   const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
@@ -44,7 +49,6 @@ app.use((req, res, next) => {
     // разрешаем кросс-доменные запросы с этими заголовками
     res.header('Access-Control-Allow-Headers', requestHeaders);
   }
-
   next();
 });
 
