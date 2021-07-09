@@ -25,8 +25,6 @@ const methodValidation = (value) => {
 const allowedCors = [
   'https://kst.mesto.nomoredomains.club',
   'http://kst.mesto.nomoredomains.club',
-  'https://api.kst.mesto.nomoredomains.club',
-  'http://api.kst.mesto.nomoredomains.club',
 ];
 
 app.use((req, res, next) => {
@@ -41,7 +39,6 @@ app.use((req, res, next) => {
 
   const requestHeaders = req.headers['access-control-request-headers'];
   if (method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Origin', origin);
     // разрешаем кросс-доменные запросы любых типов (по умолчанию)
     res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
     // разрешаем кросс-доменные запросы с этими заголовками
