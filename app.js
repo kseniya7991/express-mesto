@@ -49,6 +49,8 @@ app.use((req, res, next) => {
     // разрешаем кросс-доменные запросы с этими заголовками
     res.header('Access-Control-Allow-Headers', requestHeaders);
   }
+
+  res.status(200);
   next();
 });
 
