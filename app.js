@@ -8,7 +8,7 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 const BadRequest = require('./errors/bad-req-err');
 const NotFoundError = require('./errors/not-found-err');
 
-/* const auth = require('./middlewares/auth'); */
+const auth = require('./middlewares/auth');
 const userRoutes = require('./routes/user');
 const cardRoutes = require('./routes/card');
 const { createUser, login } = require('./controllers/user');
@@ -75,7 +75,7 @@ app.post('/signin', celebrate({
 }), login);
 
 // авторизация
-/* app.use(auth); */
+app.use(auth);
 
 app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
