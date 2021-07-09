@@ -22,7 +22,7 @@ const methodValidation = (value) => {
   }
   return value;
 };
-const allowedCors = [
+/* const allowedCors = [
   'https://kst.mesto.nomoredomains.club',
   'http://kst.mesto.nomoredomains.club',
   'https://api.kst.mesto.nomoredomains.club',
@@ -50,7 +50,7 @@ app.use((req, res, next) => {
   }
 
   next();
-});
+}); */
 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true }));
