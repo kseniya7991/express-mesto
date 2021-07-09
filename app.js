@@ -23,11 +23,6 @@ const methodValidation = (value) => {
   return value;
 };
 
-app.use(bodyParser.json()); // for parsing application/json
-app.use(bodyParser.urlencoded({ extended: true }));
-
-app.use(cookieParser('secret'));
-
 const allowedCors = [
   'https://kst.mesto.nomoredomains.club',
   'http://kst.mesto.nomoredomains.club',
@@ -49,10 +44,16 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
     // разрешаем кросс-доменные запросы с этими заголовками
     res.header('Access-Control-Allow-Headers', requestHeaders);
+    res.status(200).send();
   }
 
   next();
 });
+
+app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(cookieParser('secret'));
 
 app.use(requestLogger); // подключаем логгер запросов
 
