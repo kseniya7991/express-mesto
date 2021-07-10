@@ -46,7 +46,7 @@ module.exports.deleteCard = (req, res, next) => {
       if (deletedCard && req.user._id === deletedCard.owner.toString()) {
         try {
           const card = await Card.findByIdAndRemove(req.params.cardId);
-          return res.send(card);
+          return res.send({ card });
         } catch {
           return next(new InternalServerError('На сервере произошла ошибка'));
         }
@@ -96,7 +96,7 @@ module.exports.dislikeCard = (req, res, next) => {
         { new: true },
       );
       if (card) {
-        return res.send({ card });
+        return res.send(card);
       }
       return next(new NotFound('Карточка с указанным ID не найдена'));
     } catch (err) {
