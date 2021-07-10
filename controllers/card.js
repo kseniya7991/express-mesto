@@ -31,7 +31,7 @@ module.exports.findCards = (req, res, next) => {
   async function findCards() {
     try {
       const cards = await Card.find({}).populate('user');
-      return res.send({ cards });
+      return res.send(cards);
     } catch (err) {
       return next(new InternalServerError('На сервере произошла ошибка'));
     }
