@@ -20,7 +20,7 @@ module.exports = (req, res, next) => {
   const { cookie } = req.headers;
 
   if (typeof cookie !== 'string' || cookie === '') {
-    return next(new UnauthorizedError('Необходима авторизация'));
+    return next(new UnauthorizedError('Необходима авторизация 1'));
   }
 
   const { token } = cookie;
@@ -28,7 +28,7 @@ module.exports = (req, res, next) => {
   // Возвращаем ошибку Авторизации при попытке обращения к незащищенному роуту
 
   if (!token) {
-    return next(new UnauthorizedError('Необходима авторизация'));
+    return next(new UnauthorizedError('Необходима авторизация 2'));
   }
 
   let payload;
@@ -36,7 +36,7 @@ module.exports = (req, res, next) => {
   try {
     payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
   } catch (err) {
-    return next(new UnauthorizedError('Необходима авторизация'));
+    return next(new UnauthorizedError('Необходима авторизация 3'));
   }
 
   req.user = payload; // записываем пейлоуд в объект запроса
