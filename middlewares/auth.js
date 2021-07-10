@@ -17,7 +17,8 @@ module.exports = (req, res, next) => {
 
   // Получаем токен из кук
 
-  const { cookie } = req.headers;
+  /* const { cookie } = req.headers; */
+  const cookie = document.cookie.token;
 
   if (typeof cookie !== 'string' || cookie === '') {
     return next(new UnauthorizedError('Необходима авторизация 1'));
