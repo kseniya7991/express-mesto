@@ -64,7 +64,7 @@ app.use(requestLogger); // подключаем логгер запросов
 app.get('/crash-test', () => {
   setTimeout(() => {
     throw new Error('Сервер сейчас упадёт');
-  }, 5000);
+  }, 0);
 });
 
 app.post('/signup', celebrate({
