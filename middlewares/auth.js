@@ -8,7 +8,7 @@ module.exports = (req, res, next) => {
     return next(new UnauthorizedError('Необходима авторизация'));
   }
   /* const token = authorization.split('token=')[1]; */
-  const token = authorization;
+  const token = authorization.replace('Bearer ', '');
 
   // Возвращаем ошибку Авторизации при попытке обращения к незащищенному роуту
 
