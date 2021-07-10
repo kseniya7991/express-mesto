@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken');
 const UnauthorizedError = require('../errors/unauthorized-err');
 
 module.exports = (req, res, next) => {
-  res.send(req.headers);
   const { cookie } = req.headers;
 
   if (typeof cookie !== 'string' || cookie === '') {
