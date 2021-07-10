@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const UnauthorizedError = require('../errors/unauthorized-err');
 
 module.exports = (req, res, next) => {
-// Получаем токен в заголовках
+// Получаем токен в заголовкахs
 
   const { authorization } = req.headers;
 
