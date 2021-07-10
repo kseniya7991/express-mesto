@@ -3,13 +3,13 @@ const jwt = require('jsonwebtoken');
 const UnauthorizedError = require('../errors/unauthorized-err');
 
 module.exports = (req, res, next) => {
-  const { authorization } = req.headers;
+  const { cookie } = req.headers;
 
-  if (typeof authorization !== 'string' || authorization === '') {
+  if (typeof cookie !== 'string' || cookie === '') {
     return next(new UnauthorizedError('Необходима авторизация'));
   }
   /* const token = authorization.split('token=')[1]; */
-  const token = authorization.replace('Bearer ', '');
+  const token = cookie.replace('Bearer ', '');
 
   // Возвращаем ошибку Авторизации при попытке обращения к незащищенному роуту
 
