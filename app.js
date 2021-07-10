@@ -44,7 +44,6 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
     // разрешаем кросс-доменные запросы с этими заголовками
     res.header('Access-Control-Allow-Headers', requestHeaders);
-    res.header('Access-Control-Allow-Credentials', true);
     res.status(200).send();
   }
 
